@@ -60,12 +60,21 @@ let starMat = new THREE.PointsMaterial({color:0xffffff,size:1.2});
 let stars = new THREE.Points(starGeo,starMat);
 scene.add(stars);
 
+<<<<<<< HEAD
 // ------------------- IMAGES -------------------
 let images=[];
 let targets=[];
 let loader = new THREE.TextureLoader();
 let imageCount = 75;
 let total = window.innerWidth < 768 ? 60 : 120;
+=======
+/* IMAGES */
+let images=[]
+let targets=[]
+let loader = new THREE.TextureLoader()
+let imageCount = 75
+let total = 100
+>>>>>>> 4a79ed7ccbfc9b521387714b57f603c21859beb3
 
 // ------------------- TEXTS -------------------
 let texts=[];
@@ -140,10 +149,18 @@ function createFloatingText(){
 fetch("sentences.json")
 .then(res=>res.json())
 .then(data=>{
+<<<<<<< HEAD
   sentences = data;
   let floatingTextCount = window.innerWidth<768?150:400;
   for(let i=0;i<floatingTextCount;i++){createFloatingText();}
 });
+=======
+  sentences = data
+  for(let i=0;i<100;i++){
+    createFloatingText()
+  }
+})
+>>>>>>> 4a79ed7ccbfc9b521387714b57f603c21859beb3
 
 // ------------------- ANIMATE -------------------
 function animate(){
