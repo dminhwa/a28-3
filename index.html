@@ -2,13 +2,9 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Heart Gallery</title>
+<title>Heart Gallery Light</title>
 <style>
-body {
-  margin:0;
-  overflow:hidden;
-  background:#050015;
-}
+body { margin:0; overflow:hidden; background:#050015; }
 </style>
 </head>
 <body>
@@ -17,62 +13,55 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
 
 <script>
-// ------------------- CHECK MOBILE -------------------
+// ------------------- MOBILE CHECK -------------------
 let isMobile = window.innerWidth < 768;
 
 // ------------------- SCENE & CAMERA -------------------
 let scene = new THREE.Scene();
-let camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth/window.innerHeight,
-  0.1,
-  5000
-);
+let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 3000);
 camera.position.z = isMobile ? 180 : 160;
 
 // ------------------- RENDERER -------------------
 let renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
 // ------------------- CONTROLS -------------------
-let controls = new THREE.OrbitControls(camera,renderer.domElement);
+let controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
 controls.enablePan = false;
-controls.rotateSpeed = isMobile ? 0.25 : 0.6;
+controls.rotateSpeed = isMobile ? 0.2 : 0.5;
 controls.enableZoom = true;
-controls.zoomSpeed = isMobile ? 0.6 : 1.4;
+controls.zoomSpeed = isMobile ? 0.5 : 1.0;
 controls.minDistance = 40;
-controls.maxDistance = isMobile ? 800 : 1200;
+controls.maxDistance = isMobile ? 500 : 1200;
 
 // ------------------- STARS -------------------
 let starGeo = new THREE.BufferGeometry();
 let starVertices = [];
-let starCount = isMobile ? 1500 : 6000;
+let starCount = isMobile ? 500 : 1000;
 for(let i=0;i<starCount;i++){
   starVertices.push(
-    (Math.random()-0.5)*(isMobile?1500:2000),
-    (Math.random()-0.5)*(isMobile?1500:2000),
-    (Math.random()-0.5)*(isMobile?1500:2000)
+    (Math.random()-0.5)*(isMobile?1000:1500),
+    (Math.random()-0.5)*(isMobile?1000:1500),
+    (Math.random()-0.5)*(isMobile?1000:1500)
   );
 }
 starGeo.setAttribute("position", new THREE.Float32BufferAttribute(starVertices,3));
-let starMat = new THREE.PointsMaterial({color:0xffffff,size:1.2});
-let stars = new THREE.Points(starGeo,starMat);
+let starMat = new THREE.PointsMaterial({color:0xffffff,size:1});
+let stars = new THREE.Points(starGeo, starMat);
 scene.add(stars);
 
 // ------------------- IMAGES -------------------
-let images=[];
-let targets=[];
+let images=[], targets=[];
 let loader = new THREE.TextureLoader();
 let imageCount = 75;
-let total = isMobile ? 40 : 120;
+let total = isMobile ? 15 : 25;
 
 // ------------------- TEXTS -------------------
-let texts=[];
-let sentences=[];
+let texts=[], sentences=[];
 
 // ------------------- HEART SHAPE -------------------
 function heart(t){
@@ -85,32 +74,35 @@ function heart(t){
 for(let i=0;i<total;i++){
   let id = Math.floor(Math.random()*imageCount)+1;
   let texture = loader.load(`img/${id}.jpg`);
-  let material = new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide});
-  let size = Math.random()*(isMobile?12:20)+10;
-  let geometry = new THREE.PlaneGeometry(size,size);
-  let mesh = new THREE.Mesh(geometry,material);
-
+  let material = new THREE.MeshBasicMaterial({map:texture, side:THREE.DoubleSide});
+  let size = Math.random()*(isMobile?8:12)+6;
+  let geometry = new THREE.PlaneGeometry(size, size);
+  let mesh = new THREE.Mesh(geometry, material);
+  
   let t = (i/total)*Math.PI*2;
   let h = heart(t);
-  mesh.position.set(h.x*2.2,h.y*2.2,0);
+  mesh.position.set(h.x*2, h.y*2, 0);
   scene.add(mesh);
   images.push(mesh);
 
   targets.push(new THREE.Vector3(
-    (Math.random()-0.5)*(isMobile?600:800),
-    (Math.random()-0.5)*(isMobile?600:800),
-    (Math.random()-0.5)*(isMobile?600:800)
+    (Math.random()-0.5)*(isMobile?300:400),
+    (Math.random()-0.5)*(isMobile?300:400),
+    (Math.random()-0.5)*(isMobile?300:400)
   ));
 }
 
 // ------------------- EXPLODE -------------------
 let exploded=false;
-window.addEventListener("click",()=>{exploded=true;});
+window.addEventListener("click",()=>{ exploded=true; });
 function explodeImages(){
-  images.forEach((img,i)=>{img.position.lerp(targets[i],0.03);});
+  images.forEach((img,i)=>{ img.position.lerp(targets[i],0.03); });
 }
 function rotateImages(){
-  images.forEach(img=>{img.rotation.y += isMobile ? 0.001 : 0.002; img.rotation.x += isMobile ? 0.0005 : 0.001;});
+  images.forEach(img=>{
+    img.rotation.y += isMobile ? 0.0008 : 0.0015;
+    img.rotation.x += isMobile ? 0.0004 : 0.001;
+  });
 }
 
 // ------------------- FLOATING TEXT -------------------
@@ -118,22 +110,22 @@ function createFloatingText(){
   if(sentences.length === 0) return;
   let text = sentences[Math.floor(Math.random()*sentences.length)];
   let canvas = document.createElement("canvas");
-  canvas.width = isMobile ? 256 : 512;
-  canvas.height = isMobile ? 64 : 128;
+  canvas.width = isMobile?180:256;
+  canvas.height = isMobile?40:64;
   let ctx = canvas.getContext("2d");
   ctx.fillStyle = "white";
-  ctx.font = (isMobile?"24px":"40px")+" Arial";
+  ctx.font = (isMobile?"16px":"24px")+" Arial";
   ctx.textAlign = "center";
-  ctx.fillText(text, canvas.width/2, canvas.height/2+12);
+  ctx.fillText(text, canvas.width/2, canvas.height/2+8);
   let texture = new THREE.CanvasTexture(canvas);
-  let material = new THREE.SpriteMaterial({map:texture,transparent:true});
+  let material = new THREE.SpriteMaterial({map:texture, transparent:true});
   let sprite = new THREE.Sprite(material);
-  let scale = isMobile?40:80;
-  sprite.scale.set(scale,scale/4,1);
+  let scale = isMobile?20:50;
+  sprite.scale.set(scale, scale/4, 1);
   sprite.position.set(
-    (Math.random()-0.5)*(isMobile?400:600),
-    (Math.random()-0.5)*(isMobile?400:600),
-    (Math.random()-0.5)*(isMobile?400:600)
+    (Math.random()-0.5)*(isMobile?200:400),
+    (Math.random()-0.5)*(isMobile?200:400),
+    (Math.random()-0.5)*(isMobile?200:400)
   );
   scene.add(sprite);
   texts.push(sprite);
@@ -144,23 +136,21 @@ fetch("sentences.json")
 .then(res=>res.json())
 .then(data=>{
   sentences = data;
-  let floatingTextCount = isMobile ? 120 : 400;
-  for(let i=0;i<floatingTextCount;i++){createFloatingText();}
+  let floatingTextCount = isMobile ? 50 : 100;
+  for(let i=0;i<floatingTextCount;i++){ createFloatingText(); }
 });
 
 // ------------------- ANIMATE -------------------
 function animate(){
   requestAnimationFrame(animate);
-  stars.rotation.y += 0.0003;
+  stars.rotation.y += 0.0002;
 
-  if(exploded){explodeImages(); rotateImages();}
+  if(exploded){ explodeImages(); rotateImages(); }
 
-  // FLOATING TEXT MOVEMENT (mượt trên mobile)
-  for(let i=0;i<texts.length;i+=1){
-    let t = texts[i];
-    t.position.y += 0.02;
-    if(t.position.y>400) t.position.y=-400;
-  }
+  texts.forEach(t=>{
+    t.position.y += 0.01;
+    if(t.position.y>300) t.position.y=-300;
+  });
 
   controls.update();
   renderer.render(scene,camera);
@@ -168,12 +158,12 @@ function animate(){
 animate();
 
 // ------------------- RESIZE -------------------
-window.addEventListener("resize",()=>{
+window.addEventListener("resize", ()=>{
   camera.aspect = window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
-
 </script>
+
 </body>
 </html>
