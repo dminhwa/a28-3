@@ -74,7 +74,7 @@ let images=[]
 let targets=[]
 let loader = new THREE.TextureLoader()
 let imageCount = 75
-let total = 120
+let total = 100
 
 /* TEXTS */
 let texts=[]
@@ -169,7 +169,7 @@ fetch("sentences.json")
 .then(res=>res.json())
 .then(data=>{
   sentences = data
-  for(let i=0;i<400;i++){
+  for(let i=0;i<100;i++){
     createFloatingText()
   }
 })
