@@ -12,6 +12,7 @@ body {
 </style>
 </head>
 <body>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
 
@@ -19,7 +20,6 @@ body {
 // ------------------- CHECK MOBILE -------------------
 let isMobile = window.innerWidth < 768;
 
-// ------------------- 1 -------------------
 // ------------------- SCENE & CAMERA -------------------
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(
@@ -156,7 +156,7 @@ function animate(){
   if(exploded){explodeImages(); rotateImages();}
 
   // FLOATING TEXT MOVEMENT (mượt trên mobile)
-  for(let i=0;i<texts.length;i+=1){ // update tất cả, nhẹ hơn so với 1 frame 1 text
+  for(let i=0;i<texts.length;i+=1){
     let t = texts[i];
     t.position.y += 0.02;
     if(t.position.y>400) t.position.y=-400;
