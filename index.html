@@ -23,13 +23,14 @@ background:#050015;
 // ================= MOBILE DETECT =================
 
 function detectMobile(){
-return (
-/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
-|| ('ontouchstart' in window)
-|| navigator.maxTouchPoints>0
-)
+    return (
+        /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
+        || ('ontouchstart' in window)
+        || navigator.maxTouchPoints>0
+    )
 }
 
+// actually detect instead of forcing mobile, otherwise config never switches back
 const isMobile = true;
 
 // ================= CONFIG =================
@@ -113,11 +114,14 @@ camera.position.z = CONFIG.cameraZ
 
 // ================= RENDERER =================
 
-const renderer = new THREE.WebGLRenderer({antialias:true})
+// disable antialias on constrained devices and clamp pixel ratio to 1 on mobile
+const renderer = new THREE.WebGLRenderer({
+    antialias: !isMobile
+})
+
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5));
 
 renderer.setSize(window.innerWidth,window.innerHeight)
-
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5))
 
 document.body.appendChild(renderer.domElement)
 
@@ -126,17 +130,20 @@ document.body.appendChild(renderer.domElement)
 
 const controls = new THREE.OrbitControls(camera,renderer.domElement)
 
-controls.enableDamping = true
-controls.dampingFactor = 0.08
-controls.enablePan = false
+// disable on mobile to cut down event handling; we can still auto-rotate if desired
+if(isMobile){
+    controls.enabled = false; // mobile users won't be rotating a 3D gallery the same way
+}else{
+    controls.enableDamping = true
+    controls.dampingFactor = 0.08
+    controls.enablePan = false
+    controls.rotateSpeed = 0.6
+    controls.enableZoom = true
+    controls.zoomSpeed = 1.4
+    controls.minDistance = 40
+    controls.maxDistance = 1200
+}
 
-controls.rotateSpeed = isMobile ? 0.25 : 0.6
-
-controls.enableZoom = true
-controls.zoomSpeed = isMobile ? 0.5 : 1.4
-
-controls.minDistance = 40
-controls.maxDistance = isMobile ? 800 : 1200
 
 
 // ================= STARS =================
@@ -351,38 +358,41 @@ img.rotation.x+=CONFIG.rotateSpeed*0.5
 
 // ================= LOOP =================
 
-function animate(){
+let lastFrameTime = 0;
+function animate(time){
+    // throttle rate on mobile (~30fps) to reduce strain
+    if(isMobile){
+        if(time - lastFrameTime < 33) {
+            requestAnimationFrame(animate);
+            return;
+        }
+        lastFrameTime = time;
+    }
 
-requestAnimationFrame(animate)
+    requestAnimationFrame(animate)
 
-stars.rotation.y+=0.0003
+    stars.rotation.y+=0.0003
 
-if(exploded){
+    if(exploded){
+        explodeImages()
+        rotateImages()
+    }
 
-explodeImages()
+    texts.forEach(t=>{
+        t.position.y+=0.02
+        if(t.position.y>400){
+            t.position.y=-400
+        }
+    })
 
-rotateImages()
+    if(!isMobile){
+        controls.update()
+    }
 
+    renderer.render(scene,camera)
 }
 
-texts.forEach(t=>{
-
-t.position.y+=0.02
-
-if(t.position.y>400){
-
-t.position.y=-400
-
-}
-
-})
-
-controls.update()
-
-renderer.render(scene,camera)
-
-}
-
+// start animation loop
 animate()
 
 
