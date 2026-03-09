@@ -328,8 +328,17 @@ exploded=true
 }
 
 window.addEventListener("click",explodeTrigger)
-
 window.addEventListener("touchstart",explodeTrigger)
+
+// mobile tap-to-rotate toggle (only if controls disabled)
+let mobileRotate = false;
+function toggleMobileRotate(){
+    if(isMobile){
+        mobileRotate = !mobileRotate;
+    }
+}
+window.addEventListener("touchstart", toggleMobileRotate);
+window.addEventListener("click", toggleMobileRotate);
 
 
 // ================= ANIMATION =================
@@ -376,6 +385,11 @@ function animate(time){
     if(exploded){
         explodeImages()
         rotateImages()
+    }
+
+    // rotate camera/scene on mobile when user requested it
+    if(isMobile && mobileRotate){
+        scene.rotation.y += 0.002;
     }
 
     texts.forEach(t=>{
